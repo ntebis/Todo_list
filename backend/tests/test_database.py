@@ -72,7 +72,25 @@ class TestDatabase(unittest.TestCase):
         todo_not_exists = self.db.get_single_todo(-3)
         self.assertFalse(todo_not_exists)
 
+    def test_update_todo(self):
+        # creating notes
+        title = "Test before update"
+        body = "I got before update"
+        todo_id = self.db.create_todo(self.db.get_user_id(self.test_user), title, body )
+        todo_note_before = self.db.get_single_todo(todo_id)
+        # verifying contents
+        self.assertEqual(todo_note_before["title"], title)
+        self.assertEqual(todo_note_before["body"], body)
 
+        # updating todo
+        title_after = "Test After update"
+        body_after = "I got after update"
+        self.db.update_todo(todo_id, title_after, body_after)
+
+        todo_note_after = self.db.get_single_todo(todo_id)
+
+        self.assertEqual(todo_note_after["title"], title_after)
+        self.assertEqual(todo_note_after["body"], body_after)
 
 
     def test_get_all_todos(self):
