@@ -11,14 +11,20 @@ class Database:
             database_file_location (str, optional): The file location of the sqlite file. If not set the defaults to `database.db`. Defaults to None.
         """
         self.db_conn = (
-            sqlite3.connect(database_file_location)
+            sqlite3.connect(database_file_location, check_same_thread=False)
             if database_file_location
-            else sqlite3.connect("database.db")
+            else sqlite3.connect("database.db", check_same_thread=False)
         )
         self.db_conn.row_factory = sqlite3.Row
         self.cursor = self.db_conn.cursor()
         self.cursor
         self._create_tables()
+
+    def __del__(self):
+        """
+        Class deconstrautor
+        """
+        self.db_conn.close()
 
     def _create_tables(self) -> None:
         """Creates the tables if they do not exists"""
@@ -137,13 +143,14 @@ class Database:
         # Separate statements to allow optional changes
         update_title = "UPDATE todos SET title = ? WHERE id = ?"
 
-        update_body = "UPDATE todos SET title = ? WHERE id = ?"
+        update_body = "UPDATE todos SET body = ? WHERE id = ?"
 
         flag = False  # Used to return -1 if nothing was changed
         try:
             if title:
                 self.cursor.execute(update_title, (title, todo_id))
                 self.db_conn.commit()
+                flag = True
         except sqlite3.Error as e:
             logging.error(f"Database error: {e}")
             return None
@@ -151,6 +158,7 @@ class Database:
             if body:
                 self.cursor.execute(update_body, (body, todo_id))
                 self.db_conn.commit()
+                flag = True
         except sqlite3.Error as e:
             logging.error(f"Database error: {e}")
             return None
@@ -178,7 +186,7 @@ class Database:
             logging.error(f"Database error: {e}")
             return None
         return todo_id
-    
+
     def get_all_notes(self, user_id: int) -> list[dict] | None:
         """
         Get all notes per user
@@ -197,4 +205,3 @@ class Database:
         except sqlite3.Error as e:
             logging.error(f"Database error: {e}")
             return None
-    
