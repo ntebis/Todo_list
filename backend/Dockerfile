@@ -11,3 +11,17 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 
 # Ensure the installed binary is on the `PATH`
 ENV PATH="/root/.local/bin/:$PATH"
+
+WORKDIR /app
+
+COPY todo_backend/ todo_backend/
+COPY pyproject.toml .
+COPY uv.lock .
+
+RUN uv sync --locked
+RUN uv pip install .
+
+ENV APP_HOSTNAME=0.0.0.0
+ENV APP_PORT=8000
+
+CMD ["uv", "run", "todo_backend/server.py"]
