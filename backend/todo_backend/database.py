@@ -100,22 +100,24 @@ class Database:
 
             self.cursor.execute(add_todo, (user_id, title, body))
             self.db_conn.commit()
-            
+
             # getting the id of the todo that was just created
             get_todo_id = "SELECT id FROM todos WHERE ROWID = ?"
             row_id = self.cursor.lastrowid
-            todo_id = self.cursor.execute(get_todo_id, (row_id,) ).fetchone()["id"]
+            todo_id = self.cursor.execute(get_todo_id, (row_id,)).fetchone()["id"]
             return todo_id
         except sqlite3.Error as e:
             logging.error(f"Database error: {e}")
             return None
-        
-    def get_todo(self, todo_id: int) -> dict:
+
+    def get_single_todo(self, todo_id: int) -> dict:
         get_note = "SELECT * FROM todos WHERE id = ?"
         note = self.cursor.execute(get_note, (todo_id,)).fetchone()
         return dict(note) if note else dict()
-        
-    def update_todo(self, todo_id: int, title: str = None, body: str = None) -> int | None:
+
+    def update_todo(
+        self, todo_id: int, title: str = None, body: str = None
+    ) -> int | None:
         """
         Updates the todo note
 
@@ -125,11 +127,11 @@ class Database:
             body (str, optional): The new body of the note. Defaults to None.
 
         Returns:
-            int | None: Returns the todo_id if succesful, -1 if the note was not updated or the note does not exist, None if there was an error 
+            int | None: Returns the todo_id if succesful, -1 if the note was not updated or the note does not exist, None if there was an error
         """
 
         # checking if the note exists
-        if not self.get_todo(todo_id):
+        if not self.get_single_todo(todo_id):
             return -1
 
         # Separate statements to allow optional changes
@@ -137,7 +139,7 @@ class Database:
 
         update_body = "UPDATE todos SET title = ? WHERE id = ?"
 
-        flag = False # Used to return -1 if nothing was changed
+        flag = False  # Used to return -1 if nothing was changed
         try:
             if title:
                 self.cursor.execute(update_title, (title, todo_id))
@@ -152,10 +154,47 @@ class Database:
         except sqlite3.Error as e:
             logging.error(f"Database error: {e}")
             return None
-        
+
         return todo_id if flag else -1
 
-    
+    def delete_todo(self, todo_id: int) -> int | None:
+        """
+        Remove the todo note
 
-        
-        
+        Args:
+            todo_id (int): The id of the todo note
+
+        Returns:
+            int | None: The id of the removed note, -1 if note does not exist, None if error occurs
+        """
+        delete_note = "DELETE FROM todos WHERE id = ?"
+        if not self.get_single_todo(todo_id):
+            return -1
+
+        try:
+            self.cursor.execute(delete_note, (todo_id,))
+            self.db_conn.commit()
+        except sqlite3.Error as e:
+            logging.error(f"Database error: {e}")
+            return None
+        return todo_id
+    
+    def get_all_notes(self, user_id: int) -> list[dict] | None:
+        """
+        Get all notes per user
+
+        Args:
+            user_id (int): The user_id attached to the notes
+
+        Returns:
+            list[dict] | None: List of the notes or None if there is an error or the user doesnt exist
+        """
+        notes_by_user_id = "SELECT * FROM todos WHERE user_id = ?"
+        try:
+            results = self.cursor.execute(notes_by_user_id, (user_id,)).fetchall()
+            return [dict(row) for row in results]
+
+        except sqlite3.Error as e:
+            logging.error(f"Database error: {e}")
+            return None
+    

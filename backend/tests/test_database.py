@@ -49,18 +49,47 @@ class TestDatabase(unittest.TestCase):
         
         # Using the first username created o
         res = self.db.create_todo(self.db.get_user_id(self.test_user), "TEST", "THIS IS A TEST")
-
-        self.assertTrue(res)
+        # asserting if note created correctly 
+        self.assertTrue(res) 
 
     def test_get_todo(self):
 
         # testing if created todo note can be parsed
-        todo_id = self.db.create_todo(self.db.get_user_id(self.test_user), "Test note to get", "I got this note")
-        todo_exists = self.db.get_todo(todo_id)
+        title = "Test note to get"
+        body = "I got this note"
+        todo_id = self.db.create_todo(self.db.get_user_id(self.test_user), title, body )
+        todo_exists = self.db.get_single_todo(todo_id)
         self.assertTrue(todo_exists)
 
-        # testing what happens when the todoid doesnt exist
+        # verifying type
+        self.assertIsInstance(todo_exists, dict)
 
-        todo_not_exists = self.db.get_todo(-3)
+        # verifying contents
+        self.assertEqual(todo_exists["title"], title)
+        self.assertEqual(todo_exists["body"], body)
+
+        # testing what happens when the todo_id doesnt exist
+        todo_not_exists = self.db.get_single_todo(-3)
         self.assertFalse(todo_not_exists)
+
+
+
+
+    def test_get_all_todos(self):
+        create_number = 10 
+        for i in range(create_number):
+            self.db.create_todo(self.db.get_user_id(self.test_user), f"Test Note {i}", "This is a test to parse all notes")
+
+        res = self.db.get_all_notes(self.db.get_user_id(self.test_user))
+        
+        # testing if the todos parsed are correct
+        # it is larger than the number in case other tests have been created
+        self.assertTrue(len(res) >= create_number )
+
+        # asserting type
+        self.assertIsInstance(res, list)
+        for elem in res:
+            self.assertIsInstance(elem, dict)
+        
+
 
