@@ -1,0 +1,21 @@
+<div class="home-container">
+      <h2>Welcome to the Todo App!</h2>
+
+      <div>
+        <p>Please enter your username to proceed:</p>
+        <div class="input-group">
+          <label for="usernameInput">Username:</label>
+          <input
+            id="usernameInput"
+            type="text"
+            [(ngModel)]="usernameInput"
+            placeholder="e.g., your_username"
+            (keyup.enter)="onSubmit()"
+          />
+        </div>
+        <button (click)="onSubmit()" [disabled]="processing">
+          {{ processing ? 'Processing...' : 'Go to My Todos' }}
+        </button>
+        <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      </div>
+    </div>
