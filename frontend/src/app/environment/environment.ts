@@ -8,5 +8,5 @@ declare global {
 }
 
 export const environment = {
-  apiUrl: window.env?.apiUrl || 'http://localhost:3000/api', // Default for dev
+  apiUrl: window.env?.apiUrl || 'http://localhost:3000', // Default for dev
 };
