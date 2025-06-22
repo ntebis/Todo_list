@@ -11,7 +11,7 @@ The todo tasks can be added, edited and removed.
 The backend has a basic swagger UI showing how to use the backend API
 
 ## How to start
-To start the project first edit the `docker-compose.yml` found in the root with the correct ip address.
+To start the project first edit the `docker-compose.yml` found in the root with the correct ip address for the backend API.
 
 Then run: 
 
