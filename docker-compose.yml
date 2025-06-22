@@ -1,13 +1,14 @@
-version: '3.8' 
 services:
   frontend:
     build:
       context: ./frontend 
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "4000:80"
     environment:
-      - API_URL=http://backend:3000/api
+      - API_URL=http://192.168.50.109:3000 # replace me with the ip address of the backend. It should be always port 3000
+    networks:
+      - todo-network
 
   backend:
     build:
@@ -16,9 +17,11 @@ services:
     ports:
       - "3000:3000"         
     environment:
-      - APP_HOSTNAME: 0.0.0.0
-      - APP_PORT: 3000
+      - APP_HOSTNAME=0.0.0.0
+      - APP_PORT=3000
+    networks:
+      - todo-network
 
 networks:
-  default:
+  todo-network:
     driver: bridge
