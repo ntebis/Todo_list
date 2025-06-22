@@ -1,0 +1,23 @@
+# Ignore Node.js modules
+node_modules/
+
+# Ignore development logs
+*.log
+
+# Ignore Git-related files
+.git/
+.gitignore
+
+# Ignore temporary files or build artifacts
+tmp/
+dist/
+build/
+
+# Ignore sensitive environment variables
+.env
+
+# Ignore Docker-related files if not needed in the image (Dockerfile is always sent regardless)
+.dockerignore
+
+# Ignoring generated env.js
+src/app/assets/env.js
