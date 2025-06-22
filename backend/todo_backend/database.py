@@ -86,8 +86,11 @@ class Database:
             int: If username exists then the user id will be returned else -1
         """
         get_user_id = "SELECT id FROM users WHERE username = ?;"
-        user_id = self.cursor.execute(get_user_id, (username.lower(),)).fetchone()["id"]
-        return user_id if user_id else -1
+        result = self.cursor.execute(get_user_id, (username.lower(),)).fetchone()
+        if result:
+            user_id = result["id"]
+            return user_id 
+        return -1
 
     def create_todo(self, user_id: int, title: str, body: str = None) -> int | None:
         """
