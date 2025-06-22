@@ -20,6 +20,5 @@ class UpdateTodo(BaseModel):
     """
     Helper Class to update todos
     """
-    id: int
     title: Optional[str]
     body: Optional[str]
