@@ -12,7 +12,8 @@
 			"extensions": [
 				"tamasfe.even-better-toml",
 				"charliermarsh.ruff",
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"qwtel.sqlite-viewer"
 			]
 		}
 	},
