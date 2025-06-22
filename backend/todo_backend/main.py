@@ -3,6 +3,8 @@ from fastapi import FastAPI, HTTPException
 from todo_backend.database import Database
 from fastapi.middleware.cors import CORSMiddleware
 
+from todo_backend.models import CreateTodo, CreateUser, UpdateTodo
+
 db = Database()
 
 app = FastAPI(docs_url = "/")
@@ -22,7 +24,7 @@ app.add_middleware(
 
 # status code 201 since it creates a new user
 @app.post("/user/", status_code=201)
-def create_user(username: str) -> int:
+def create_user(request_body: CreateUser) -> int:
     """
     Endpoint to create a user
 
@@ -32,6 +34,7 @@ def create_user(username: str) -> int:
     Returns:
         int: The user id of the created user
     """
+    username = request_body.username
     res = db.create_user(username)
 
     if res != -1:
@@ -78,7 +81,7 @@ def get_all_notes_for_user(user_id: int) -> list[dict]:
         raise HTTPException(status_code=204, detail=f"No notes were found for user_id {user_id}")
 
 @app.post("/todo/", status_code=201)
-def create_todo(user_id: int, title: str, body: str = None) -> dict:
+def create_todo(request_body: CreateTodo) -> dict:
     """
     Create a todo note
 
@@ -90,6 +93,10 @@ def create_todo(user_id: int, title: str, body: str = None) -> dict:
     Returns:
         dict: JSON object of the note added
     """
+
+    user_id: int = request_body.user_id
+    title: str = request_body.title
+    body: str = request_body.body
     todo_id = db.create_todo(user_id, title, body)
     return db.get_single_todo(todo_id)
 
@@ -114,7 +121,7 @@ def get_todo(todo_id: int) -> dict:
 
 
 @app.put("/todo/{todo_id}")
-def update_todo(todo_id: int, title: str = None, body: str = None) -> dict:
+def update_todo(todo_id: int, response_body: UpdateTodo) -> dict:
     """
     Update a todo note
 
@@ -126,7 +133,7 @@ def update_todo(todo_id: int, title: str = None, body: str = None) -> dict:
     Returns:
         dict: JSON object that contains the modified note
     """
-    res = db.update_todo(todo_id, title, body)
+    res = db.update_todo(todo_id, response_body.title, response_body.body)
 
     if res != -1:
         return db.get_single_todo(todo_id)
