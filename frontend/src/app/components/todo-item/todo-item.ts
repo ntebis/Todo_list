@@ -57,7 +57,7 @@ export class TodoItem {
             throw err;
           })).subscribe(() => {
         console.log(`Edited note with id: ${this.todo().id}`)
-        this.todosComponent.loadTodos(this.userService._current_user!.id)
+        this.todosComponent.loadTodos(this.userService._current_user!.id) // reload the todos list with the latest data
         this.isEditing = false;
       })
   }
@@ -74,7 +74,7 @@ export class TodoItem {
           })
     ).subscribe(() => {
       console.log(`Removed note with id: ${this.todo().id}`)
-      this.todosComponent.loadTodos(this.userService._current_user!.id)
+      this.todosComponent.loadTodos(this.userService._current_user!.id) // reload the todos list with the latest data
     })
   }
 }
