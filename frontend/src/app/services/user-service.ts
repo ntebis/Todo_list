@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { environment } from '../environment/environment';
@@ -35,18 +35,20 @@ export class UserService {
       "username": username
     }
 
-    return this.http.get<{ id: number }>(userUrl, { params }).pipe(
+    return this.http.get<number>(userUrl, { params }).pipe(
       map(response => {
-        console.log(`User ID found for username '${username}': ${response.id}`);
-        this._current_user = { id: response.id, username: username };
+        console.log(`User ID found for username '${username}': ${response}`);
+        this._current_user = { id: response, username: username };
         return this._current_user;
       }),
       catchError((error: HttpErrorResponse) => {
         // if user not found create them
         if (error.status === 404) {
-          console.log(`User with username '${username}' not found (404). Attempting to create new user.`);
-          return this.http.post<User>(userUrl, params).pipe(
-            tap(newUser => console.log('New user created successfully:', newUser.username, 'ID:', newUser.id)),
+          return this.http.post<number>(userUrl, params).pipe(map(response => {
+            console.log(`New user created successfully: '${username}' ID: ${response}`);
+            this._current_user = { id: response, username: username };
+            return this._current_user
+          }),
             catchError(postError => {
               console.error(`Error creating user '${username}':`, postError);
               return this.handleError(postError);
