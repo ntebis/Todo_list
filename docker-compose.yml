@@ -6,7 +6,7 @@ services:
     ports:
       - "4000:80"
     environment:
-      - API_URL=http://192.168.50.109:3000 # replace me with the ip address of the backend. It should be always port 3000
+      - API_URL=http://192.168.50.109:3000 # replace me with the ip address of the backend. It should be always port 3000. Do not add a slash at the end
     networks:
       - todo-network
 
