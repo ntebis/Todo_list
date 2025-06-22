@@ -21,3 +21,8 @@ build/
 
 # Ignoring generated env.js
 src/app/assets/env.js
+
+# Other folders
+.devcontainer/
+.vscode/
+.angular.

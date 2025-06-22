@@ -7,3 +7,19 @@ RUN npm ci --force # Use npm ci for clean install, --force if needed for legacy 
 
 COPY . .
 RUN npm run build -- --configuration=production
+
+
+FROM nginx:alpine
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/dist/todo-frontend/browser /usr/share/nginx/html
+
+COPY ./src/app/assets/env.template.js /usr/share/nginx/html/assets/env.template.js
+COPY entrypoint.sh /docker-entrypoint.sh
+
+RUN chmod +x /docker-entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
